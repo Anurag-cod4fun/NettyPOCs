@@ -1,0 +1,22 @@
+package com.example.demo.config;
+
+import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import reactor.netty.http.server.HttpServer;
+import reactor.netty.resources.LoopResources;
+
+@Configuration
+public class NettyConfig {
+
+    @Bean
+    public NettyReactiveWebServerFactory nettyReactiveWebServerFactory() {
+        NettyReactiveWebServerFactory factory = new NettyReactiveWebServerFactory();
+        factory.addServerCustomizers(httpServer -> 
+            httpServer.tcpConfiguration(tcpServer ->
+                tcpServer.runOn(LoopResources.create("netty-event-loop", 32, true)) // Increase worker threads
+            )
+        );
+        return factory;
+    }
+}
